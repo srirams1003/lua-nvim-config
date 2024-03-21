@@ -233,6 +233,9 @@ vim.api.nvim_set_keymap('n', '<Leader>t', ':tabnext<CR>', { noremap = true, sile
 -- Shortcut to move to the previous tab
 vim.api.nvim_set_keymap('n', '<Leader>y', ':tabprevious<CR>', { noremap = true, silent = true })
 
+-- Key mapping to toggle Markdown preview
+vim.api.nvim_set_keymap('n', '<Leader>c', ':MarkdownPreviewToggle<CR>', { silent = true })
+
 -- End of my custom keymaps
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -491,6 +494,17 @@ require('lazy').setup({
       lspconfig.pyright.setup {}
       lspconfig.tsserver.setup {}
       lspconfig.clangd.setup {}
+      lspconfig.css_variables.setup {}
+
+      -- lspconfig.html.setup {} -- shortened version without extra capability
+      --Enable (broadcasting) snippet capability for completion
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+      require('lspconfig').html.setup {
+        capabilities = capabilities,
+      }
+
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -716,12 +730,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -900,13 +914,16 @@ require('lazy').setup({
       }
     end,
   },
+  -- install with yarn or npm
   {
     'iamcco/markdown-preview.nvim',
-    config = function()
-      vim.fn['mkdp#util#install']()
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && yarn install',
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
     end,
+    ft = { 'markdown' },
   },
-
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
