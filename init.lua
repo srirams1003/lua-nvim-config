@@ -495,13 +495,24 @@ require('lazy').setup({
       lspconfig.tsserver.setup {}
       lspconfig.clangd.setup {}
       lspconfig.css_variables.setup {}
+      lspconfig.gopls.setup {}
+
+      lspconfig.eslint.setup {
+        --- ...
+        on_attach = function(client, bufnr)
+          vim.api.nvim_create_autocmd('BufWritePre', {
+            buffer = bufnr,
+            command = 'EslintFixAll',
+          })
+        end,
+      }
 
       -- lspconfig.html.setup {} -- shortened version without extra capability
       --Enable (broadcasting) snippet capability for completion
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-      require('lspconfig').html.setup {
+      lspconfig.html.setup {
         capabilities = capabilities,
       }
 
