@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -171,6 +171,40 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 vim.keymap.set('n', '<leader>x', ':qa<CR>')
 vim.keymap.set('n', '<leader>z', ':Neotree<CR>')
+
+-- Toggle spellchecking
+function ToggleSpellCheck()
+  local spell_enabled = vim.opt.spell:get()
+
+  if spell_enabled then
+    vim.opt.spell = false
+    print 'Spellcheck OFF'
+  else
+    vim.opt.spell = true
+    print 'Spellcheck ON'
+  end
+end
+
+-- Key mapping
+vim.keymap.set('n', '<Leader>s', '<cmd>lua ToggleSpellCheck()<CR>')
+
+-- Toggle mouse
+function ToggleMouse()
+  -- Get the current value of the mouse option
+  local mouse_enabled = vim.o.mouse
+
+  -- Toggle the mouse option based on its current value
+  if mouse_enabled == '' then
+    vim.o.mouse = 'a' -- Enable mouse mode
+    print 'Mouse mode ON'
+  else
+    vim.o.mouse = '' -- Disable mouse mode
+    print 'Mouse mode OFF'
+  end
+end
+
+-- Key mapping
+vim.api.nvim_set_keymap('n', '<Leader>d', '<cmd>lua ToggleMouse()<CR>', { noremap = true, silent = true })
 
 -- End of my custom keymaps
 
@@ -429,6 +463,7 @@ require('lazy').setup({
       local lspconfig = require 'lspconfig'
       lspconfig.pyright.setup {}
       lspconfig.tsserver.setup {}
+      lspconfig.clangd.setup {}
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
