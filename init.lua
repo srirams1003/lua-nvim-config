@@ -206,6 +206,33 @@ end
 -- Key mapping
 vim.api.nvim_set_keymap('n', '<Leader>d', '<cmd>lua ToggleMouse()<CR>', { noremap = true, silent = true })
 
+-- Toggle relative line numbering
+function ToggleRelativeLine()
+  vim.opt.relativenumber = not vim.opt.relativenumber:get()
+end
+
+-- Key mapping
+vim.api.nvim_set_keymap('n', '<Leader>a', '<cmd>lua ToggleRelativeLine()<CR>', { noremap = true, silent = true })
+
+-- Key mapping to go to the last accessed tab page
+vim.api.nvim_set_keymap('n', '<C-s>', ':tabnext #<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<C-s>', ':tabnext #<CR>', { noremap = true, silent = true })
+
+-- Toggle comment in visual mode using comment.nvim plugin
+vim.keymap.set('x', '<leader>q', '<Plug>(comment_toggle_linewise_visual)', { silent = true })
+
+-- Toggle comment in normal mode using comment.nvim plugin
+vim.keymap.set('n', '<leader>q', '<Plug>(comment_toggle_linewise_current)', { silent = true })
+
+-- the greatest remap ever (Primeagen)
+vim.keymap.set('v', '<leader>p', '"_dP')
+
+-- Shortcut to move to the next tab
+vim.api.nvim_set_keymap('n', '<Leader>t', ':tabnext<CR>', { noremap = true, silent = true })
+
+-- Shortcut to move to the previous tab
+vim.api.nvim_set_keymap('n', '<Leader>y', ':tabprevious<CR>', { noremap = true, silent = true })
+
 -- End of my custom keymaps
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -871,6 +898,12 @@ require('lazy').setup({
       require('nvim-surround').setup {
         -- Configuration here, or leave empty to use defaults
       }
+    end,
+  },
+  {
+    'iamcco/markdown-preview.nvim',
+    config = function()
+      vim.fn['mkdp#util#install']()
     end,
   },
 
