@@ -496,6 +496,7 @@ require('lazy').setup({
       lspconfig.clangd.setup {}
       lspconfig.css_variables.setup {}
       lspconfig.gopls.setup {}
+      lspconfig.ruby_ls.setup {}
 
       lspconfig.eslint.setup {
         --- ...
