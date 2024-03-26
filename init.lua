@@ -186,7 +186,7 @@ function ToggleSpellCheck()
 end
 
 -- Key mapping
-vim.keymap.set('n', '<Leader>s', '<cmd>lua ToggleSpellCheck()<CR>')
+vim.keymap.set('n', '<Leader>sc', '<cmd>lua ToggleSpellCheck()<CR>')
 
 -- Toggle mouse
 function ToggleMouse()
