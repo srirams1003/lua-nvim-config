@@ -1012,11 +1012,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<C-e>', function()
         toggle_telescope(harpoon:list())
       end, { desc = 'Open harpoon window' })
-
-      -- Jump to the last opened buffer in Harpoon
-      vim.keymap.set('n', '<leader>l', function()
-        vim.cmd ':b#'
-      end)
     end,
     keys = {
       {
@@ -1089,6 +1084,15 @@ require('lazy').setup({
           require('harpoon'):list():select(6)
         end,
         desc = 'harpoon to file 6',
+      },
+      -- New key mapping for jumping to the last accessed buffer
+      {
+        '<leader>v',
+        function()
+          -- Description: Jump to the last accessed buffer
+          vim.cmd ':b#'
+        end,
+        desc = 'jump to the last accessed buffer',
       },
     },
   },
