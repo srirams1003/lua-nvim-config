@@ -284,6 +284,41 @@ if not vim.loop.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+-- NOTE: HARPOON SPECIAL CONFIG STARTS HERE
+-- function for harpoon to automatically create "tab-like" things for the current buffers in harpoon
+function Harpoon_files()
+  local harpoon = require 'harpoon'
+  local contents = {}
+  local marks_length = harpoon:list():length()
+  local current_file_path = vim.fn.fnamemodify(vim.fn.expand '%:p', ':.')
+  for index = 1, marks_length do
+    local harpoon_file_path = harpoon:list():get(index).value
+    local file_name = harpoon_file_path == '' and '(empty)' or vim.fn.fnamemodify(harpoon_file_path, ':t')
+
+    if current_file_path == harpoon_file_path then
+      contents[index] = string.format('%%#HarpoonNumberActive# %s. %%#HarpoonActive#%s ', index, file_name)
+    else
+      contents[index] = string.format('%%#HarpoonNumberInactive# %s. %%#HarpoonInactive#%s ', index, file_name)
+    end
+  end
+
+  return table.concat(contents)
+end
+
+vim.opt.showtabline = 2
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'User' }, {
+  callback = function()
+    vim.o.tabline = Harpoon_files()
+  end,
+})
+
+vim.cmd 'highlight! HarpoonInactive guibg=NONE guifg=#63698c'
+vim.cmd 'highlight! HarpoonActive guibg=NONE guifg=white'
+vim.cmd 'highlight! HarpoonNumberActive guibg=NONE guifg=#7aa2f7'
+vim.cmd 'highlight! HarpoonNumberInactive guibg=NONE guifg=#7aa2f7'
+vim.cmd 'highlight! TabLineFill guibg=NONE guifg=white'
+-- NOTE: HARPOON SPECIAL CONFIG ENDS HERE
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -356,6 +391,7 @@ require('lazy').setup({
         ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
         ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
         ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
+        ['<leader>h'] = { name = '[H]arpoon', _ = 'which_key_ignore' },
         ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
         ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
       }
@@ -943,6 +979,88 @@ require('lazy').setup({
       vim.g.mkdp_filetypes = { 'markdown' }
     end,
     ft = { 'markdown' },
+  },
+  -- harpoon by theprimagen
+  {
+    'theprimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('harpoon'):setup()
+    end,
+    keys = {
+      {
+        '<leader>ha',
+        function()
+          require('harpoon'):list():append()
+        end,
+        desc = 'add file to harpoon list',
+      },
+      {
+        '<leader>hr',
+        function()
+          require('harpoon'):list():remove()
+        end,
+        desc = 'remove current buffer from harpoon list',
+      },
+      {
+        '<leader>hc',
+        function()
+          require('harpoon'):list():clear()
+        end,
+        desc = 'clear harpoon config in current project',
+      },
+      {
+        '<leader>m',
+        function()
+          local harpoon = require 'harpoon'
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = 'harpoon UI',
+      },
+      {
+        '<leader>1',
+        function()
+          require('harpoon'):list():select(1)
+        end,
+        desc = 'harpoon to file 1',
+      },
+      {
+        '<leader>2',
+        function()
+          require('harpoon'):list():select(2)
+        end,
+        desc = 'harpoon to file 2',
+      },
+      {
+        '<leader>3',
+        function()
+          require('harpoon'):list():select(3)
+        end,
+        desc = 'harpoon to file 3',
+      },
+      {
+        '<leader>4',
+        function()
+          require('harpoon'):list():select(4)
+        end,
+        desc = 'harpoon to file 4',
+      },
+      {
+        '<leader>5',
+        function()
+          require('harpoon'):list():select(5)
+        end,
+        desc = 'harpoon to file 5',
+      },
+      {
+        '<leader>6',
+        function()
+          require('harpoon'):list():select(6)
+        end,
+        desc = 'harpoon to file 6',
+      },
+    },
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
