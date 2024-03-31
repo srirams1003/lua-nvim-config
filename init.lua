@@ -227,15 +227,26 @@ vim.keymap.set('n', '<leader>q', '<Plug>(comment_toggle_linewise_current)', { si
 -- the greatest remap ever (Primeagen)
 vim.keymap.set('v', '<leader>p', '"_dP')
 
--- Shortcut to move to the next tab
-vim.api.nvim_set_keymap('n', '<Leader>t', ':tabnext<CR>', { noremap = true, silent = true })
+-- Shortcut to move to the next buffer
+vim.api.nvim_set_keymap('n', '<Leader>t', ':bnext<CR>', { noremap = true, silent = true })
 
--- Shortcut to move to the previous tab
-vim.api.nvim_set_keymap('n', '<Leader>y', ':tabprevious<CR>', { noremap = true, silent = true })
+-- Shortcut to move to the previous buffer
+vim.api.nvim_set_keymap('n', '<Leader>y', ':bprevious<CR>', { noremap = true, silent = true })
 
 -- Key mapping to toggle Markdown preview
 vim.api.nvim_set_keymap('n', '<Leader>c', ':MarkdownPreviewToggle<CR>', { silent = true })
 
+-- set cursor to last open position before quitting file
+local group = vim.api.nvim_create_augroup('jump_last_position', { clear = true })
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function()
+    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+    if { row, col } ~= { 0, 0 } then
+      vim.api.nvim_win_set_cursor(0, { row, 0 })
+    end
+  end,
+  group = group,
+})
 -- End of my custom keymaps
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -285,38 +296,63 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- NOTE: HARPOON SPECIAL CONFIG STARTS HERE
--- function for harpoon to automatically create "tab-like" things for the current buffers in harpoon
-function Harpoon_files()
-  local harpoon = require 'harpoon'
-  local contents = {}
-  local marks_length = harpoon:list():length()
-  local current_file_path = vim.fn.fnamemodify(vim.fn.expand '%:p', ':.')
-  for index = 1, marks_length do
-    local harpoon_file_path = harpoon:list():get(index).value
-    local file_name = harpoon_file_path == '' and '(empty)' or vim.fn.fnamemodify(harpoon_file_path, ':t')
+-- -- function for harpoon to automatically create "tab-like" things for the current buffers in harpoon
+-- function Harpoon_files()
+--   local harpoon = require 'harpoon'
+--   local contents = {}
+--   local marks_length = harpoon:list():length()
+--   local current_file_path = vim.fn.fnamemodify(vim.fn.expand '%:p', ':.')
+--   for index = 1, marks_length do
+--     local harpoon_file_path = harpoon:list():get(index).value
+--     local file_name = harpoon_file_path == '' and '(empty)' or vim.fn.fnamemodify(harpoon_file_path, ':t')
+--
+--     if current_file_path == harpoon_file_path then
+--       contents[index] = string.format('%%#HarpoonNumberActive# %s. %%#HarpoonActive#%s ', index, file_name)
+--     else
+--       contents[index] = string.format('%%#HarpoonNumberInactive# %s. %%#HarpoonInactive#%s ', index, file_name)
+--     end
+--   end
+--
+--   return table.concat(contents)
+-- end
+--
+-- vim.opt.showtabline = 2
+-- vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'User' }, {
+--   callback = function()
+--     vim.o.tabline = Harpoon_files()
+--   end,
+-- })
+--
+-- vim.cmd 'highlight! HarpoonInactive guibg=NONE guifg=#63698c'
+-- vim.cmd 'highlight! HarpoonActive guibg=NONE guifg=white'
+-- vim.cmd 'highlight! HarpoonNumberActive guibg=NONE guifg=#7aa2f7'
+-- vim.cmd 'highlight! HarpoonNumberInactive guibg=NONE guifg=#7aa2f7'
+-- vim.cmd 'highlight! TabLineFill guibg=NONE guifg=white'
 
-    if current_file_path == harpoon_file_path then
-      contents[index] = string.format('%%#HarpoonNumberActive# %s. %%#HarpoonActive#%s ', index, file_name)
-    else
-      contents[index] = string.format('%%#HarpoonNumberInactive# %s. %%#HarpoonInactive#%s ', index, file_name)
-    end
+function OpenAllHarpoonBuffers()
+  local harpoon = require 'harpoon'
+  local len = harpoon:list():length()
+
+  -- Save the current buffer number
+  local current_buf = vim.fn.bufnr '%'
+
+  -- Open all buffers in harpoon so lualine/bufferline can know
+  for i = 1, len do
+    harpoon:list():select(i)
   end
 
-  return table.concat(contents)
+  -- Switch to another buffer before closing the current one
+  vim.cmd('buffer ' .. current_buf)
+
+  -- Close the current buffer
+  vim.cmd 'bwipeout'
+
+  -- Leave the user back at the first buffer
+  harpoon:list():select(1)
 end
 
-vim.opt.showtabline = 2
-vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'User' }, {
-  callback = function()
-    vim.o.tabline = Harpoon_files()
-  end,
-})
+vim.api.nvim_set_keymap('n', '<leader>o', '<cmd>lua OpenAllHarpoonBuffers()<CR>', { noremap = true, silent = true })
 
-vim.cmd 'highlight! HarpoonInactive guibg=NONE guifg=#63698c'
-vim.cmd 'highlight! HarpoonActive guibg=NONE guifg=white'
-vim.cmd 'highlight! HarpoonNumberActive guibg=NONE guifg=#7aa2f7'
-vim.cmd 'highlight! HarpoonNumberInactive guibg=NONE guifg=#7aa2f7'
-vim.cmd 'highlight! TabLineFill guibg=NONE guifg=white'
 -- NOTE: HARPOON SPECIAL CONFIG ENDS HERE
 
 -- [[ Configure and install plugins ]]
@@ -984,7 +1020,23 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      require('lualine').setup { sections = { lualine_a = { 'mode', 'buffers' } } }
+      -- require('lualine').setup { sections = { lualine_a = { 'mode', 'buffers' } } }
+      require('lualine').setup { sections = { lualine_a = { 'mode' } } }
+    end,
+  },
+  {
+    'akinsho/bufferline.nvim',
+    version = '*',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      vim.opt.termguicolors = true
+      require('bufferline').setup {
+        options = {
+          numbers = function(opts)
+            return opts.ordinal
+          end,
+        },
+      }
     end,
   },
   -- harpoon by theprimagen
