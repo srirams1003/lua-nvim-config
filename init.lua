@@ -238,7 +238,7 @@ vim.api.nvim_set_keymap('n', '<Leader>c', ':MarkdownPreviewToggle<CR>', { silent
 
 -- set cursor to last open position before quitting file
 local group = vim.api.nvim_create_augroup('jump_last_position', { clear = true })
-vim.api.nvim_create_autocmd('BufEnter', {
+vim.api.nvim_create_autocmd('BufReadPost', {
   callback = function()
     local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
     if { row, col } ~= { 0, 0 } then
