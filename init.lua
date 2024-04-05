@@ -236,17 +236,17 @@ vim.api.nvim_set_keymap('n', '<Leader>y', ':bprevious<CR>', { noremap = true, si
 -- Key mapping to toggle Markdown preview
 vim.api.nvim_set_keymap('n', '<Leader>c', ':MarkdownPreviewToggle<CR>', { silent = true })
 
--- set cursor to last open position before quitting file
-local group = vim.api.nvim_create_augroup('jump_last_position', { clear = true })
-vim.api.nvim_create_autocmd('BufReadPost', {
-  callback = function()
-    local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
-    if { row, col } ~= { 0, 0 } then
-      vim.api.nvim_win_set_cursor(0, { row, 0 })
-    end
-  end,
-  group = group,
-})
+-- -- set cursor to last open position before quitting file
+-- local group = vim.api.nvim_create_augroup('jump_last_position', { clear = true })
+-- vim.api.nvim_create_autocmd('BufReadPost', {
+--   callback = function()
+--     local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+--     if { row, col } ~= { 0, 0 } then
+--       vim.api.nvim_win_set_cursor(0, { row, 0 })
+--     end
+--   end,
+--   group = group,
+-- })
 -- End of my custom keymaps
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
