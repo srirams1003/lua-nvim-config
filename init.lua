@@ -1077,7 +1077,7 @@ require('lazy').setup({
       {
         '<leader>ha',
         function()
-          require('harpoon'):list():append()
+          require('harpoon'):list():add()
         end,
         desc = 'add file to harpoon list',
       },
