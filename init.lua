@@ -169,6 +169,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- Start of my custom keymaps
 
+vim.g.mkdp_browser = 'edge'
+
 vim.keymap.set('n', '<leader>x', ':qa<CR>')
 vim.keymap.set('n', '<leader>z', ':Neotree<CR>')
 
@@ -1011,7 +1013,7 @@ require('lazy').setup({
   {
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
+    build = 'cd app && npm install',
     init = function()
       vim.g.mkdp_filetypes = { 'markdown' }
     end,
