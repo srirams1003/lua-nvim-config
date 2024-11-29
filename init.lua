@@ -169,7 +169,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- Start of my custom keymaps
 
-vim.g.mkdp_browser = 'edge'
+vim.g.mkdp_browser = 'firefox'
 
 vim.keymap.set('n', '<leader>x', ':qa<CR>')
 vim.keymap.set('n', '<leader>z', ':Neotree<CR>')
@@ -424,15 +424,24 @@ require('lazy').setup({
       require('which-key').setup()
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>h'] = { name = '[H]arpoon', _ = 'which_key_ignore' },
-        ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-      }
+      -- require('which-key').register 
+      -- {
+      --   { "<leader>c", group = "[C]ode" },
+      --   { "<leader>c_", hidden = true },
+      --   { "<leader>d", group = "[D]ocument" },
+      --   { "<leader>d_", hidden = true },
+      --   { "<leader>g", group = "[G]it" },
+      --   { "<leader>g_", hidden = true },
+      --   { "<leader>h", group = "[H]arpoon" },
+      --   { "<leader>h_", hidden = true },
+      --   { "<leader>r", group = "[R]ename" },
+      --   { "<leader>r_", hidden = true },
+      --   { "<leader>s", group = "[S]earch" },
+      --   { "<leader>s_", hidden = true },
+      --   { "<leader>w", group = "[W]orkspace" },
+      --   { "<leader>w_", hidden = true },
+      -- }
+
     end,
   },
 
@@ -573,7 +582,7 @@ require('lazy').setup({
     config = function()
       local lspconfig = require 'lspconfig'
       lspconfig.pyright.setup {}
-      lspconfig.tsserver.setup {}
+      lspconfig.ts_ls.setup {}
       lspconfig.clangd.setup {}
       lspconfig.css_variables.setup {}
       lspconfig.gopls.setup {}
@@ -1009,15 +1018,23 @@ require('lazy').setup({
       }
     end,
   },
-  -- install with yarn or npm
+  -- install without yarn or npm
+  -- Install markdown preview, use npx if available.
   {
-    'iamcco/markdown-preview.nvim',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && npm install',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function(plugin)
+      if vim.fn.executable "npx" then
+        vim.cmd("!cd " .. plugin.dir .. " && cd app && npx --yes yarn install")
+      else
+        vim.cmd [[Lazy load markdown-preview.nvim]]
+        vim.fn["mkdp#util#install"]()
+      end
     end,
-    ft = { 'markdown' },
+    init = function()
+      if vim.fn.executable "npx" then vim.g.mkdp_filetypes = { "markdown" } end
+    end,
   },
   {
     'nvim-lualine/lualine.nvim',
@@ -1179,26 +1196,26 @@ require('lazy').setup({
 
   { import = 'custom.plugins' },
 }, {
-  ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
+    ui = {
+      -- If you are using a Nerd Font: set icons to an empty table which will use the
+      -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+      icons = vim.g.have_nerd_font and {} or {
+        cmd = '⌘',
+        config = '🛠',
+        event = '📅',
+        ft = '📂',
+        init = '⚙',
+        keys = '🗝',
+        plugin = '🔌',
+        runtime = '💻',
+        require = '🌙',
+        source = '📄',
+        start = '🚀',
+        task = '📌',
+        lazy = '💤 ',
+      },
     },
-  },
-})
+  })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
