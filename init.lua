@@ -169,7 +169,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- Start of my custom keymaps
 
-vim.g.mkdp_browser = 'google-chrome'
+vim.g.mkdp_browser = 'firefox'
 
 vim.keymap.set('n', '<leader>x', ':qa<CR>')
 vim.keymap.set('n', '<leader>z', ':Neotree<CR>')
