@@ -221,10 +221,10 @@ vim.api.nvim_set_keymap('n', '<C-s>', ':tabnext #<CR>', { noremap = true, silent
 vim.api.nvim_set_keymap('v', '<C-s>', ':tabnext #<CR>', { noremap = true, silent = true })
 
 -- Toggle comment in visual mode using comment.nvim plugin
-vim.keymap.set('x', '<leader>q', '<Plug>(comment_toggle_linewise_visual)', { silent = true })
+vim.keymap.set('x', '<C-_>', '<Plug>(comment_toggle_linewise_visual)', { silent = true })
 
 -- Toggle comment in normal mode using comment.nvim plugin
-vim.keymap.set('n', '<leader>q', '<Plug>(comment_toggle_linewise_current)', { silent = true })
+vim.keymap.set('n', '<C-_>', '<Plug>(comment_toggle_linewise_current)', { silent = true })
 
 -- the greatest remap ever (Primeagen)
 vim.keymap.set('v', '<leader>p', '"_dP')
@@ -1181,6 +1181,20 @@ require('lazy').setup({
           require('harpoon'):list():select(6)
         end,
         desc = 'harpoon to file 6',
+      },
+      {
+        '<leader>7',
+        function()
+          require('harpoon'):list():select(7)
+        end,
+        desc = 'harpoon to file 7',
+      },
+      {
+        '<leader>8',
+        function()
+          require('harpoon'):list():select(8)
+        end,
+        desc = 'harpoon to file 8',
       },
       -- New key mapping for jumping to the last accessed buffer
       {
