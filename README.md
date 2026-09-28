@@ -28,6 +28,13 @@ The language servers this config attaches to are installed by `secondScript.sh` 
 [`srirams1003/dotfiles`](https://github.com/srirams1003/dotfiles): pyright,
 typescript-language-server, clangd, gopls, and the HTML/CSS servers.
 
+**`tree-sitter-cli` must stay on 0.25.x.** 0.26 removed the `--no-bindings` flag that
+nvim-treesitter's (archived) `master` branch still passes, so parsers that have to be
+generated — `latex`, `markdown_inline` — fail with `unexpected argument '--no-bindings'`
+and retry on every start. `secondScript.sh` pins it; if you upgrade it by hand, this comes
+back. The pin lifts only when this config moves to treesitter `main`, which also requires
+moving telescope off `0.1.x` (see the treesitter spec comment in `init.lua`).
+
 ---
 
 ## What differs from stock kickstart
