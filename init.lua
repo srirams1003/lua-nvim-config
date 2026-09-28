@@ -978,7 +978,13 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.config', -- Sets main module to use for opts
+    -- Pin the branch explicitly. nvim-treesitter switched its DEFAULT branch from
+    -- master to main, and with no branch here lazy silently follows that default —
+    -- which swaps the whole module API out from under this config on an update.
+    -- The main branch also drops parsers.ft_to_lang, which telescope still calls
+    -- on the 0.1.x line pinned above, so `master` is the combination that works.
+    branch = 'master',
+    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
       ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc', 'markdown_inline', 'latex', 'lua' },
       -- Autoinstall languages that are not installed
@@ -996,7 +1002,7 @@ require('lazy').setup({
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
       ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.config').setup(opts)
+      require('nvim-treesitter.configs').setup(opts)
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
